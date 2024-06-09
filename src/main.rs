@@ -8,11 +8,14 @@ async fn main() {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
     let mut rng = thread_rng();
     let mut total = 0;
+    let mut tab_index = 1;
+    const RADIX: u32 = 10;
 
     loop {
-        if rand::random() {
-            enigo.key(Key::Meta, Direction::Click).unwrap();
-        }
+        // if rand::random() {
+        //     enigo.key(Key::Meta, Direction::Click).unwrap();
+        //     enigo.key(Key::Meta, Direction::Click).unwrap();
+        // }
 
         if rand::random() {
             enigo.move_mouse(0, 0, enigo::Coordinate::Rel).unwrap();
@@ -28,9 +31,19 @@ async fn main() {
 
         if total >= 300_000 {
             total = 0;
-            enigo.key(Key::Control, Direction::Press).unwrap();
-            enigo.key(Key::Tab, Direction::Click).unwrap();
+            let tab_index_as_char = char::from_digit(tab_index, RADIX).unwrap();
+
+            enigo.key(Key::Option, Direction::Press).unwrap();
+            enigo
+                .key(Key::Unicode(tab_index_as_char), Direction::Click)
+                .unwrap();
             enigo.key(Key::Control, Direction::Release).unwrap();
+
+            if tab_index < 9 {
+                tab_index = tab_index + 1;
+            } else {
+                tab_index = 1;
+            }
         }
     }
 }
