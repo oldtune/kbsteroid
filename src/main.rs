@@ -7,6 +7,7 @@ use tokio::{self, time::sleep};
 async fn main() {
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
     let mut rng = thread_rng();
+    let mut total = 0;
 
     loop {
         if rand::random() {
@@ -22,6 +23,14 @@ async fn main() {
         }
 
         let jitter = rng.gen_range(1000..=1500);
+        total += jitter;
         sleep(Duration::from_millis(jitter)).await;
+
+        if total >= 300_000 {
+            total = 0;
+            enigo.key(Key::Control, Direction::Press).unwrap();
+            enigo.key(Key::Tab, Direction::Click).unwrap();
+            enigo.key(Key::Control, Direction::Release).unwrap();
+        }
     }
 }
